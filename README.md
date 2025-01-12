@@ -1,1 +1,1 @@
-The readme!
+A repository where I will have some Python practice / coding problems.
