@@ -48,7 +48,7 @@ def play_blackjack():
 def draw_starting_hands():
     """Draws 2 cards for the player, 1 card for the computer"""
     draw_card(player_hand, 2)
-    draw_card(computer_hand, 1)
+    draw_card(computer_hand, 2)
 
 def ask_for_hit():
     """
