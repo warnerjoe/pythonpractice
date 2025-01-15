@@ -1,0 +1,107 @@
+import art
+import game_data
+import random
+
+game_running = True
+score = 0
+
+def start_game():
+    """Picks 2 random people, makes sure A isn't B, then plays the game."""
+    global score
+    print(art.logo)
+
+    person_a = choose_random_person()
+    person_b = choose_random_person()
+
+    if person_a['name'] == person_b['name']:
+        person_b = choose_random_person()
+
+    display_people(person_a, person_b)
+
+    play_game(person_a, person_b)
+
+def display_people(person_a, person_b):
+    """Displays the non-follower data to the user."""
+    print(f"Compare A: {person_a['name']}, a {person_a['description']}, from {person_a['country']}")
+    print(art.vs)
+    print(f"Against B: {person_b['name']}, a {person_b['description']}, from {person_b['country']}")
+
+def play_game(person_a, person_b):
+    """Asks the player to enter A or B based on who they think has more followers"""
+    guess = input("Who has more followers, A or B? ").lower()
+    print(guess)
+    if guess != 'a' and guess != 'b':
+        print("Invalid input.")
+        guess = replay_round(person_a, person_b)
+
+    calculate_result(guess, person_a, person_b)
+
+def replay_round(person_a, person_b):
+    """If the player enters something other than A or B, it will ask them again."""
+    display_people(person_a, person_b)
+
+    guess = input("Who has more followers, A or B? ").lower()
+    if guess == 'a' or guess == 'b':
+        return guess
+    else:
+        return replay_round(person_a, person_b)
+
+def calculate_result(guess, person_a, person_b):
+    """ Checks what the guess is, compares the scores, and proceeds as needed"""
+    global score
+    a_follow = person_a['follower_count']
+    b_follow = person_b['follower_count']
+    if guess == 'a':
+        if a_follow > b_follow:
+            score += 1
+            additional_round(person_a)
+        elif a_follow == b_follow:
+            print("Draw, lets do another round!")
+            additional_round(person_a)
+        else:
+            finalize_game()
+    elif guess == 'b':
+        if b_follow > a_follow:
+            score += 1
+            additional_round(person_b)
+        elif a_follow == b_follow:
+            print("Draw, lets do another round!")
+            additional_round(person_b)
+        else:
+            finalize_game()
+
+def additional_round(correct_answer):
+    """If the player gets the round correct, it runs another round with the same winning 'person', but a new second person."""
+    global score
+    person_c = choose_random_person()
+    print(art.logo)
+    print(f"You're right! Current score: {score}")
+    display_people(correct_answer, person_c)
+    play_game(correct_answer, person_c)
+
+def finalize_game():
+    """If the player is incorrect, it shows their score and offers to restart the game."""
+    global score
+    print(art.logo)
+    print(f"Sorry, that's wrong. Final score: {score}")
+    replay_question()
+
+def replay_question():
+    """ Asks the user if they want to play again, ends if no, resets score if yes."""
+    global game_running
+    global score
+    replay_response = input("Would you like to play again? Y or N").lower()
+    if replay_response == 'n':
+        game_running = False
+    elif replay_response == 'y':
+        score = 0
+    else:
+        print("Invalid response.")
+        replay_question()
+
+def choose_random_person():
+    """Returns a random entry from game_data"""
+    return random.choice(game_data.data)
+
+while game_running:
+    start_game()
